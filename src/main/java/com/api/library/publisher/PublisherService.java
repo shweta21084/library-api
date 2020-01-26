@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.library.exception.LibraryResourceAlreadyExistsException;
 import com.api.library.exception.LibraryResourceNotFoundException;
+import com.api.library.util.LibraryAPIUtils;
 
 @Service
 public class PublisherService {
@@ -36,18 +37,38 @@ public class PublisherService {
 	public Publisher getPublisher(Integer publisherId) throws LibraryResourceNotFoundException {
 		Optional<PublisherEntity> publisherEntity = publisherRepository.findById(publisherId);
 		Publisher publisher = null;
-		
 		if (publisherEntity.isPresent()) {
 			PublisherEntity pe = publisherEntity.get();
-			publisher = createPublisherFromEntity(pe);
+			publisher  = createPublisherFromEntity(pe);
 		} else {
 			throw new LibraryResourceNotFoundException("Publisher Id : " + publisherId + " not found");
 		}
 		return publisher;
 	}
+	
+	public void updatePublisher(Publisher publisherToBeUpdated) throws LibraryResourceNotFoundException {
+		Optional<PublisherEntity> publisherEntity = publisherRepository.findById(publisherToBeUpdated.getPublisherId());
+		if (publisherEntity.isPresent()) {
+			PublisherEntity pe = publisherEntity.get();
+			if(LibraryAPIUtils.doesStringValueExists(publisherToBeUpdated.getEmailId())) {
+				pe.setEmailId(publisherToBeUpdated.getEmailId());
+			}
+			if (LibraryAPIUtils.doesStringValueExists(publisherToBeUpdated.getPhoneNumber())) {
+				pe.setPhoneNumber(publisherToBeUpdated.getPhoneNumber());
+			}
+			publisherRepository.save(pe);
+			publisherToBeUpdated = createPublisherFromEntity(pe);
+		} else {
+			throw new LibraryResourceNotFoundException("Publisher Id : " + publisherToBeUpdated.getPublisherId() + " not found");
+		}
+	}
+
+	
 
 	private Publisher createPublisherFromEntity(PublisherEntity pe) {
 		return new Publisher(pe.getPublisherId(), pe.getName(), pe.getEmailId(), pe.getPhoneNumber());
 	}
+
+	
 
 }
