@@ -1,6 +1,11 @@
 package com.api.library.publisher;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -73,8 +78,24 @@ public class PublisherService {
 		}
 	}
 
+	public List<Publisher> searchPublisher(String name) {
+		List<PublisherEntity> publisherEntities = null;
+		if (LibraryAPIUtils.doesStringValueExists(name)) {
+			publisherEntities = publisherRepository.findByNameContaining(name);
+		}
+		if (publisherEntities != null && !publisherEntities.isEmpty()) {
+			return createPublishersForSearchResponse(publisherEntities);
+		} else {
+			return Collections.emptyList();
+		}
+	}
+	
 	private Publisher createPublisherFromEntity(PublisherEntity pe) {
 		return new Publisher(pe.getPublisherId(), pe.getName(), pe.getEmailId(), pe.getPhoneNumber());
+	}
+
+	private List<Publisher> createPublishersForSearchResponse(List<PublisherEntity> publisherEntities) {
+		return publisherEntities.stream().map(pe -> createPublisherFromEntity(pe)).collect(Collectors.toList());
 	}
 
 }
