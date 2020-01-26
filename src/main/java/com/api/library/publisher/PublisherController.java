@@ -2,6 +2,7 @@ package com.api.library.publisher;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,5 +55,15 @@ public class PublisherController {
 			return new ResponseEntity<>(le.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(publisher, HttpStatus.OK);
+	}
+	
+	@DeleteMapping(path = "/{publisherId}")
+	public ResponseEntity<?> deletePublisher(@PathVariable Integer publisherId) {
+		try {
+			publisherService.deletePublisher(publisherId);
+		} catch (LibraryResourceNotFoundException le) {
+			return new ResponseEntity<>(le.getMessage(), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 }
