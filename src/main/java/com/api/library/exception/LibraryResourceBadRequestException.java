@@ -1,10 +1,10 @@
 package com.api.library.exception;
 
-public class LibraryResourceNotFoundException extends Exception {
+public class LibraryResourceBadRequestException extends Exception {
 	
 	private String traceId;
 
-	public LibraryResourceNotFoundException(String traceId, String message) {
+	public LibraryResourceBadRequestException(String traceId, String message) {
 		super(message);
 		this.traceId = traceId;
 	}
